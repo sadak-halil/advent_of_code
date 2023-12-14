@@ -8,7 +8,17 @@ import (
 	"strconv"
 )
 
-func findNumberOfDices(line []byte) map[string]int {
+func processGameNumber(line []byte) int {
+	gameNumberBytes := line[5:bytes.Index(line, []byte(":"))] //takes the bytes between "Game " and ":"
+	gameNumber, err := strconv.Atoi(string(gameNumberBytes))
+	if err != nil {
+		fmt.Println("Error converting to int", err)
+		return 0
+	}
+	return gameNumber
+}
+
+func checkGamesPossibility(line []byte) bool {
 
 	re := regexp.MustCompile(`(\d+) (red|blue|green)`)
 
@@ -34,7 +44,18 @@ func findNumberOfDices(line []byte) map[string]int {
 
 	}
 
-	return numberOfDices
+	for color, number := range numberOfDices {
+
+		if color == "red" && number > 12 {
+			return false
+		} else if color == "green" && number > 13 {
+			return false
+		} else if color == "blue" && number > 14 {
+			return false
+		}
+	}
+
+	return true
 }
 
 func main() {
@@ -51,8 +72,10 @@ func main() {
 	var answer = 0
 
 	for _, line := range lines {
-		power := findNumberOfDices(line)
-		answer += (power["red"] * power["green"] * power["blue"])
+		possible := checkGamesPossibility(line)
+		if possible {
+			answer += processGameNumber(line)
+		}
 	}
 
 	fmt.Println(answer)

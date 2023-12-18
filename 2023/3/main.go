@@ -4,16 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"unicode"
 )
 
-func checkIfSymbols(r []byte) bool {
-	for _, s := range r {
-		if !unicode.IsDigit(rune(s)) && s != '.' {
-			return true
+func findAsterisk(line []byte) []int {
+
+	var asterisks []int
+
+	for i, symbol := range line {
+		if symbol == '*' {
+			asterisks = append(asterisks, i)
 		}
 	}
-	return false
+
+	return asterisks
 }
 
 func extractNumbers(line []byte) []struct {
@@ -63,42 +66,48 @@ func extractNumbers(line []byte) []struct {
 	return numbers
 }
 
-func checkForSurroundingSymbols(previousLine []byte, line []byte, nextLine []byte, startIndex int, endIndex int) bool {
-	if startIndex != 0 {
-		startIndex -= 1
-	}
-	if endIndex != len(line)-1 {
-		endIndex += 1
-	}
-	// fmt.Println("1: ", string(previousLine), "\n2: ", string(line), "\n3: ", string(nextLine), "\nstart: ", startIndex, "\nend: ", endIndex)
-	// if endIndex == len(line)-1 {
-	// 	fmt.Println("previous line: ", string(previousLine[startIndex:endIndex+1]), "\nprevious symbol: ", string([]byte{line[startIndex]}), "\nnext line: ", string(nextLine[startIndex:endIndex+1]))
-	// } else if startIndex == 0 {
-	// 	fmt.Println("previous line: ", string(previousLine[startIndex:endIndex+1]), "\nnext symbol: ", string([]byte{line[endIndex]}), "\nnext line: ", string(nextLine[startIndex:endIndex+1]))
-	// } else {
-	// 	fmt.Println("previous line: ", string(previousLine[startIndex:endIndex+1]), "\nprevious symbol: ", string([]byte{line[startIndex]}), "\nnext symbol: ", string([]byte{line[endIndex]}), "\nnext line: ", string(nextLine[startIndex:endIndex+1]))
-	// }
+func checkIfGear(previousLine []byte, line []byte, nextLine []byte, index int) int {
 
-	if startIndex == 0 {
-		if checkIfSymbols(previousLine[startIndex:endIndex+1]) || checkIfSymbols([]byte{line[endIndex]}) || checkIfSymbols(nextLine[startIndex:endIndex+1]) {
-			return true
+	previousLineNumbers := extractNumbers(previousLine)
+	currentLineNumbers := extractNumbers(line)
+	nextLineNumbers := extractNumbers(nextLine)
+
+	type Gear struct {
+		Ratio                  int
+		NumberOfConnectedParts int
+	}
+
+	gear := Gear{
+		Ratio:                  1,
+		NumberOfConnectedParts: 0,
+	}
+
+	for _, number := range previousLineNumbers {
+		if (number.StartIndex <= index && number.EndIndex >= index) || number.EndIndex == index-1 || number.StartIndex == index+1 {
+			gear.Ratio *= number.Number
+			gear.NumberOfConnectedParts++
 		}
-		return false
 	}
 
-	if endIndex == len(line)-1 {
-		if checkIfSymbols(previousLine[startIndex:endIndex+1]) || checkIfSymbols([]byte{line[startIndex]}) || checkIfSymbols(nextLine[startIndex:endIndex+1]) {
-			return true
+	for _, number := range currentLineNumbers {
+		if number.StartIndex == index+1 || number.EndIndex == index-1 {
+			gear.Ratio *= number.Number
+			gear.NumberOfConnectedParts++
 		}
-		return false
 	}
 
-	if checkIfSymbols(previousLine[startIndex:endIndex+1]) || checkIfSymbols([]byte{line[startIndex]}) || checkIfSymbols([]byte{line[endIndex]}) || checkIfSymbols(nextLine[startIndex:endIndex+1]) {
-		return true
+	for _, number := range nextLineNumbers {
+		if (number.StartIndex <= index && number.EndIndex >= index) || number.EndIndex == index-1 || number.StartIndex == index+1 {
+			gear.Ratio *= number.Number
+			gear.NumberOfConnectedParts++
+		}
 	}
 
-	return false
+	if gear.NumberOfConnectedParts == 2 {
+		return gear.Ratio
+	}
 
+	return 0 //returning 0 in order not to change the sum in case the gear is not connected to 2 parts
 }
 
 func main() {
@@ -112,51 +121,16 @@ func main() {
 
 	data := bytes.Split(input, []byte("\n"))
 
-	// numbers := extractNumbers(data[2])
-
-	// for _, number := range numbers {
-	// 	result := checkForSurroundingSymbols(data[1], data[2], data[3], number.StartIndex, number.EndIndex)
-	// 	fmt.Println(number.Number, result)
-	// }
-
-	periods := make([]byte, len(data[0])-1)
-	for i := range periods {
-		periods[i] = '.'
-	}
-
 	var result int = 0
 
 	for li, line := range data {
-		numbers := extractNumbers(line)
-		if li == 0 {
-			// fmt.Println("0 case", li)
-			for _, number := range numbers {
-				if checkForSurroundingSymbols(periods, line, data[li+1], number.StartIndex, number.EndIndex) {
-					// fmt.Println("found a not surrounded number", number.Number)
-					result += number.Number
-				}
-			}
-			continue
-		} else if li == len(data)-1 {
-			// fmt.Println("len case", li)
-			for _, number := range numbers {
-				if checkForSurroundingSymbols(data[li-1], line, periods, number.StartIndex, number.EndIndex) {
-					// fmt.Println("found a not surrounded number", number.Number)
-					result += number.Number
-				}
-			}
-			break
-		} else {
-			// fmt.Println("regular case", li)
-			for _, number := range numbers {
-				if checkForSurroundingSymbols(data[li-1], line, data[li+1], number.StartIndex, number.EndIndex) {
-					// fmt.Println("found a not surrounded number", number.Number)
-					result += number.Number
-				}
-			}
+		if li == 0 || li == len(data)-1 {
+			continue //we know for a fact that first and last line do not have asterisks
+		}
+		asterisks := findAsterisk(line)
+		for _, asteriskIndex := range asterisks {
+			result += checkIfGear(data[li-1], line, data[li+1], asteriskIndex)
 		}
 	}
-
 	fmt.Println(result)
-
 }

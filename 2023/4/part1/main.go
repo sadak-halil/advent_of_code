@@ -3,17 +3,16 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 )
 
-// remove the Card X: part of each inout line
 func cleanLine(line []byte) []byte {
 	idx := bytes.Index(line, []byte(": "))
 	line = line[idx+2:]
 	return line
 }
 
-// split the numbers at the | (pipe) sign
 func splitNumbers(line []byte) (winningNumbers []byte, myNumbers []byte) {
 	idx := bytes.Index(line, []byte(" | "))
 	winningNumbers = line[:idx]
@@ -21,7 +20,6 @@ func splitNumbers(line []byte) (winningNumbers []byte, myNumbers []byte) {
 	return winningNumbers, myNumbers
 }
 
-// put numbers into a slice of integers
 func extractNumbers(slice []byte) []int {
 	var numbers []int
 	for _, word := range bytes.Fields(slice) {
@@ -34,7 +32,6 @@ func extractNumbers(slice []byte) []int {
 	return numbers
 }
 
-// compare numbers
 func winningNumbersCount(line []byte) int {
 	winningNumbers, myNumbers := splitNumbers(line)
 	winningNumbersInt := extractNumbers(winningNumbers)
@@ -64,26 +61,19 @@ func main() {
 
 	data := bytes.Split(input, []byte("\n"))
 
-	scratchCards := make([]int, len(data))
-	for i := range scratchCards {
-		scratchCards[i] = 1
-	}
+	result := 0
 
-	fmt.Println(scratchCards)
-
-	for idx, line := range data {
+	for _, line := range data {
 		line = cleanLine(line)
 
 		winningNumbers := winningNumbersCount(line)
-		amountOfCards := scratchCards[idx]
 
 		if winningNumbers != 0 {
-			idx += 1
-			for i := idx; i <= idx+winningNumbers; i++ {
-				scratchCards[i] += amountOfCards
-
-			}
+			lineScore := math.Pow(2, float64(winningNumbers)-1)
+			result += int(lineScore)
 		}
 	}
-	fmt.Println(scratchCards)
+
+	fmt.Println(result)
+
 }

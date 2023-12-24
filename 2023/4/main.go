@@ -69,8 +69,6 @@ func main() {
 		scratchCards[i] = 1
 	}
 
-	fmt.Println(scratchCards)
-
 	for idx, line := range data {
 		line = cleanLine(line)
 
@@ -78,12 +76,15 @@ func main() {
 		amountOfCards := scratchCards[idx]
 
 		if winningNumbers != 0 {
-			idx += 1
-			for i := idx; i <= idx+winningNumbers; i++ {
+			index := idx + 1
+			for i := index; i < index+winningNumbers; i++ {
 				scratchCards[i] += amountOfCards
-
 			}
 		}
 	}
-	fmt.Println(scratchCards)
+	result := 0
+	for i := range scratchCards {
+		result += scratchCards[i]
+	}
+	fmt.Println(result)
 }

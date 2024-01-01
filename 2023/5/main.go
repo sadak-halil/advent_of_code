@@ -175,20 +175,26 @@ func main() {
 
 	seeds, soilMap, fertilizerMap, waterMap, lightMap, temperatureMap, humidityMap, locationMap := getMaps(input)
 
-	for _, seed := range seeds {
-		soil := checkMapping(soilMap, seed)
-		fertilzer := checkMapping(fertilizerMap, soil)
-		water := checkMapping(waterMap, fertilzer)
-		light := checkMapping(lightMap, water)
-		temperature := checkMapping(temperatureMap, light)
-		humidity := checkMapping(humidityMap, temperature)
-		location := checkMapping(locationMap, humidity)
-		if closestLocation == 0 {
-			closestLocation = location
+	for idx, seedStart := range seeds {
+		if idx%2 != 0 {
+			continue
 		}
-		if closestLocation > location {
-			closestLocation = location
+		for i := seedStart; i < (seedStart + seeds[idx+1]); i++ {
+			soil := checkMapping(soilMap, i)
+			fertilzer := checkMapping(fertilizerMap, soil)
+			water := checkMapping(waterMap, fertilzer)
+			light := checkMapping(lightMap, water)
+			temperature := checkMapping(temperatureMap, light)
+			humidity := checkMapping(humidityMap, temperature)
+			location := checkMapping(locationMap, humidity)
+			if closestLocation == 0 {
+				closestLocation = location
+			}
+			if closestLocation > location {
+				closestLocation = location
+			}
 		}
 	}
+
 	fmt.Println("Closest Location:", closestLocation)
 }

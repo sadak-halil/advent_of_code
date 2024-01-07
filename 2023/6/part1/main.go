@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func extractIntegersFromSection(section []byte) []int {
@@ -44,18 +43,6 @@ func waysToBeatRecord(time int, distance int) int {
 	return numberOfWays
 }
 
-func concatenateIntegers(slice []int) (int, error) {
-	var sb strings.Builder
-	for _, integer := range slice {
-		sb.WriteString(strconv.Itoa(integer))
-	}
-	result, err := strconv.Atoi(sb.String())
-	if err != nil {
-		return 0, err
-	}
-	return result, nil
-}
-
 func main() {
 
 	//read file input
@@ -65,18 +52,14 @@ func main() {
 		return
 	}
 
+	result := 1
+
 	times, records := getTimeAndDistance(input)
-	time, errT := concatenateIntegers(times)
-	if errT != nil {
-		fmt.Println("Error calculating time")
-		return
-	}
-	record, errR := concatenateIntegers(records)
-	if errR != nil {
-		fmt.Println("Error calculating record")
-		return
+
+	for i, time := range times {
+		result *= waysToBeatRecord(time, records[i])
 	}
 
-	fmt.Println(waysToBeatRecord(time, record))
+	fmt.Println(result)
 
 }

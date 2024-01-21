@@ -6,14 +6,13 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 var strength = map[byte]int{
 	'A': 14,
 	'K': 13,
 	'Q': 12,
-	'J': -1,
+	'J': 11,
 	'T': 10,
 	'9': 9,
 	'8': 8,
@@ -75,60 +74,6 @@ func getBestHand(cards string) int {
 	return HIGH_CARD
 }
 
-func playWilds(h Hand) int {
-	m := map[rune]int{}
-	for _, c := range h.cards {
-		m[c]++
-	}
-
-	if m['J'] >= 4 {
-		return FIVE_OF_A_KIND
-	}
-
-	if m['J'] == 3 {
-		if len(m) == 2 {
-			return FIVE_OF_A_KIND
-		}
-		return FOUR_OF_A_KIND
-	}
-
-	if m['J'] == 2 {
-		if h.bestHand == TWO_PAIR {
-			return FOUR_OF_A_KIND
-		}
-
-		if h.bestHand == ONE_PAIR {
-			return THREE_OF_A_KIND
-		}
-
-		if h.bestHand == FULL_HOUSE {
-			return FIVE_OF_A_KIND
-		}
-
-	}
-
-	if m['J'] == 1 {
-		if h.bestHand == THREE_OF_A_KIND {
-			return FOUR_OF_A_KIND
-		}
-
-		if h.bestHand == TWO_PAIR {
-			return FULL_HOUSE
-		}
-
-		if h.bestHand == ONE_PAIR {
-			return THREE_OF_A_KIND
-		}
-
-		if h.bestHand == FOUR_OF_A_KIND {
-			return FIVE_OF_A_KIND
-		}
-
-	}
-
-	return ONE_PAIR
-}
-
 func main() {
 
 	//read file input
@@ -154,10 +99,6 @@ func main() {
 		}
 
 		h := Hand{cards: cards, bid: bid, bestHand: getBestHand(cards)}
-
-		if strings.Contains(h.cards, `J`) {
-			h.bestHand = playWilds(h)
-		}
 
 		hands = append(hands, h)
 

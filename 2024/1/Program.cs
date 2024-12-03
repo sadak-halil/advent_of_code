@@ -1,19 +1,79 @@
-﻿public class Program
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+
+public class Program
 {
     public static void Main(string[] args)
     {
-        string input = File.ReadAllText("input.txt");
-        string part = args.Length > 0 ? args[0] : "1";
-        string result = part == "2" ? SolvePart2(input) : Solve(input);
+        Console.WriteLine($"************* Day 1 START *************");
 
-        Console.WriteLine($"Result: {result}");
+        var p1 = PartOne("input.txt");
+        var p2 = PartTwo("input.txt");
+
+        Console.WriteLine($"Part 1 Result: {p1.result} \t: {p1.ms}ms");
+        Console.WriteLine($"Part 2 Result: {p2.result} \t: {p2.ms}ms");
+        Console.WriteLine($"************* Day 1 DONE *************");
     }
-    public static (List<int>, List<int>) ParseInput(string input)
+
+    public static (long result, double ms) PartOne(string file)
     {
-        var lines = input.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        long result = 0;
+        var sw = new Stopwatch();
+        sw.Start();
+
+        var (firstElements, secondElements) = ParseInput(File.ReadAllText(file));
+
+        // Sort the lists
+        firstElements.Sort();
+        secondElements.Sort();
+
+        // Calculate absolute differences
+        var differences = new List<int>();
+        for (int i = 0; i < firstElements.Count; i++)
+        {
+            differences.Add(Math.Abs(firstElements[i] - secondElements[i]));
+        }
+
+        // Sum the differences
+        result = differences.Sum();
+
+        sw.Stop();
+        return (result, sw.Elapsed.TotalMilliseconds);
+    }
+
+    public static (long result, double ms) PartTwo(string file)
+    {
+        long result = 0;
+        var sw = new Stopwatch();
+        sw.Start();
+
+        var (firstElements, secondElements) = ParseInput(File.ReadAllText(file));
+
+        // Calculate similarity scores
+        var similarityScores = new List<int>();
+        foreach (var element in firstElements)
+        {
+            var count = secondElements.Count(e => e == element);
+            similarityScores.Add(element * count);
+        }
+
+        // Sum the similarity scores
+        result = similarityScores.Sum();
+
+        sw.Stop();
+        return (result, sw.Elapsed.TotalMilliseconds);
+    }
+
+    public static (List<int> firstElements, List<int> secondElements) ParseInput(string input)
+    {
         var firstElements = new List<int>();
         var secondElements = new List<int>();
 
+        // Split input into lines and parse each line
+        var lines = input.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         foreach (var line in lines)
         {
             var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
@@ -25,38 +85,5 @@
         }
 
         return (firstElements, secondElements);
-    }
-    public static string Solve(string input)
-    {
-        var (firstElements, secondElements) = ParseInput(input);
-
-        firstElements.Sort();
-        secondElements.Sort();
-
-        var differences = new List<int>();
-
-        for (int i = 0; i < firstElements.Count; i++)
-        {
-            differences.Add(Math.Abs(firstElements[i] - secondElements[i]));
-        }
-
-        return differences.Sum().ToString();
-    }
-
-
-    public static string SolvePart2(string input)
-    {
-        var (firstElements, secondElements) = ParseInput(input);
-        var similarityScores = new List<int>();
-
-        foreach (var element in firstElements)
-        {
-            var count = secondElements.Count(e => e == element);
-            similarityScores.Add(element * count);
-        }
-
-        var result = similarityScores.Sum().ToString();
-
-        return result;
     }
 }

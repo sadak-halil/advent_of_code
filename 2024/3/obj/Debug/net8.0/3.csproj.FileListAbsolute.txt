@@ -1,0 +1,15 @@
+/Users/sadakhalil/projects/advent-of-code/2024/3/bin/Debug/net8.0/3
+/Users/sadakhalil/projects/advent-of-code/2024/3/bin/Debug/net8.0/3.deps.json
+/Users/sadakhalil/projects/advent-of-code/2024/3/bin/Debug/net8.0/3.runtimeconfig.json
+/Users/sadakhalil/projects/advent-of-code/2024/3/bin/Debug/net8.0/3.dll
+/Users/sadakhalil/projects/advent-of-code/2024/3/bin/Debug/net8.0/3.pdb
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.GeneratedMSBuildEditorConfig.editorconfig
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.AssemblyInfoInputs.cache
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.AssemblyInfo.cs
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.csproj.CoreCompileInputs.cache
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.sourcelink.json
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.dll
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/refint/3.dll
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.pdb
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/3.genruntimeconfig.cache
+/Users/sadakhalil/projects/advent-of-code/2024/3/obj/Debug/net8.0/ref/3.dll
